@@ -12,7 +12,8 @@ let beer_colors = [[40, 25, 15],
  				   [60, 40, 10], 
  				   [70, 10, 15],
 				   [20, 10, 10],
-				   [235, 215, 10]]
+				   [235, 215, 10]];
+
 
 function setup() {
 	createCanvas(w, h);
@@ -38,6 +39,7 @@ function draw() {
 	background(100);
 	
 	// Table legs
+	fill(125, 80, 5);
 	stroke(100, 80, 5);
 	strokeWeight(2);
 	rect(cx + w / 5 - 21, h - 50, 20, 50);
@@ -48,16 +50,16 @@ function draw() {
 	trapezoid(w / 2, h * 0.9, w / 2, w / 5, h * 0.65);
 	
 	for (var beer of beers) {
-		beer.draw()
+		beer.draw();
 	}
 }
 
 
 function trapezoid(x, y, bottom_width, top_width, height) {
-	x1 = x - bottom_width / 2
-	x2 = x + bottom_width / 2
-	x3 = x + top_width / 2
-	x4 = x - top_width / 2
+	x1 = x - bottom_width / 2;
+	x2 = x + bottom_width / 2;
+	x3 = x + top_width / 2;
+	x4 = x - top_width / 2;
 	
 	y1 = y2 = y;
 	y3 = y4 = y - height;
@@ -73,11 +75,11 @@ function rand_color() {
 
 class Beer {
 	constructor(x, y, bottom_width) {
-		this.x = x
-		this.y = y
+		this.x = x;
+		this.y = y;
 
-		this.bottom_width = bottom_width
-		this.top_width = bottom_width * 1.5
+		this.bottom_width = bottom_width;
+		this.top_width = bottom_width * 1.5;
 		this.height = bottom_width * 2.14;
 
 		this.percent_fill = 0.95;
@@ -87,7 +89,7 @@ class Beer {
 
 		[this.r, this.g, this.b] = rand_color();
 
-		this.visible = true
+		this.visible = true;
 	}
 
 	draw() {
