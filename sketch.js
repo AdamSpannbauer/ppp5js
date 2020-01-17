@@ -14,16 +14,26 @@ let beer_colors = [[40, 25, 15],
                    [20, 10, 10],
                    [235, 215, 10]];
 
+let day_angle = 90;
+let delta_day = 0.5;
+let night_alpha = 0;
+
+let img;
+
+function preload() {
+  img = loadImage('pp_logo.png');
+}
 
 function setup() {
     createCanvas(w, h);
+    angleMode(DEGREES);
 
     let offset_scale = 0.05;
     let y = 100;
     let width = 20;
     let min_y = 150;
 
-    for (i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         let x = cx + w * offset_scale;
         
         beers[i] = new Beer(x, max([y, min_y]), width);
@@ -36,7 +46,46 @@ function setup() {
 
 function draw() {
     clear();
-    background(100);
+    background(100, 100, 250);
+
+    noStroke();
+    if (day_angle >= 0 & day_angle < 90) {
+        night_alpha = map(day_angle, 0, 90, 75, 200);
+    } else if (day_angle >= 90 & day_angle < 180) {
+        night_alpha = map(day_angle, 90, 180, 200, 75);
+    } else if (day_angle >= 180 & day_angle < 270) {
+        night_alpha = map(day_angle, 180, 279, 75, 0);
+    } else if (day_angle >= 270 & day_angle < 360) {
+        night_alpha = map(day_angle, 270, 360, 0, 75);
+    }
+
+    fill(50, 50, 50, night_alpha);
+    rect(0, 0, w, h);
+
+    // Sun
+    push();
+    translate(cx, cy + 30)
+    rotate(day_angle);
+    
+    day_angle += delta_day;
+    if (day_angle >= 360) {
+        day_angle -= 360
+    }
+
+    fill(245, 250, 5);
+    noStroke();
+    ellipse(cx, -10, 200, 200);
+
+    // Moon
+    rotate(180);
+    fill(230, 230, 230)
+    ellipse(cx, -10, 200, 200);
+    pop();
+
+    // Horizon
+    noStroke();
+    fill(100, 200, 100);
+    rect(0, cy, w, cy);
     
     // Table legs
     fill(125, 80, 5);
@@ -49,9 +98,55 @@ function draw() {
     fill(125, 80, 5);
     trapezoid(w / 2, h * 0.9, w / 2, w / 5, h * 0.65);
     
-    for (var beer of beers) {
+    for (let beer of beers) {
         beer.draw();
     }
+
+    // Grill
+    fill(0);
+    noStroke();
+    arc(600, 400, 150, 150, 0, 180);
+    
+    push();
+    fill(200, 200, 200);
+    translate(560, 460);
+    rotate(20);
+    rect(0, 0, 10, 100, 10);
+    pop();
+
+    push();
+    fill(200, 200, 200);
+    translate(635, 460);
+    rotate(-20);
+    rect(0, 0, 10, 100, 10);
+    pop();
+
+    // Smoke
+    for (let x = w - 80; x <= w - 10; x += 20) {
+        strokeWeight(0.75);
+        stroke(70, 60);
+        noFill();
+        
+        beginShape();
+        vertex(x, h - 95);
+        let start = h - 95
+        let len = 50 * random(0.9, 1.0);
+        let end = start - len;
+        for (let y = start; y >= end; y -= 10) {
+            let noiseScale = map(noise(x * random(), y), 0, 3, 0, 15);
+            curveVertex(x + noiseScale, y);
+        }
+
+        vertex(x, end);
+        endShape();
+    }
+
+    // PP Steak
+    push();
+    rotate(-5);
+    tint(255, 175);
+    image(img, 5, 10, 100, 150, 30);
+    pop();
 }
 
 
@@ -85,7 +180,7 @@ class Beer {
         this.percent_fill = 0.95;
         this.drink_rate = -0.005;
         this.refill_rate = 0.05;
-        this.delta_fill = -0.005;
+        this.delta_fill = this.drink_rate;
 
         [this.r, this.g, this.b] = rand_color();
 
@@ -125,7 +220,7 @@ class Beer {
             pop();
         }
 
-        this.percent_fill += this.delta_fill;
+        this.percent_fill += this.delta_fill * random(0, 1.5);
         if (this.percent_fill <= 0) {
             this.delta_fill = this.refill_rate;
             [this.r, this.g, this.b] = rand_color();
